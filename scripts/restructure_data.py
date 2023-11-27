@@ -2,9 +2,8 @@ import os
 import shutil
 import random
 
-ORIGINAL_DATASET = '/Datensatz Gewebe'
-ORIGINAL_DATASET_ANNOTATED = '/Originale mit Maske'
-NEW_DATASET = '/dataset'
+ORIGINAL_DATASET_DIR = '../Datensatz Gewebe/Originale mit Maske'
+NEW_DATASET_DIR = '../dataset'
 ANNOTATION_DIR_SUFFIX = 'annot'
 MASK_SUFFIX = '_mask'
 TRAIN = '/train'
@@ -12,6 +11,7 @@ VAL = '/val'
 TEST = '/test'
 DIRS = [TRAIN, VAL, TEST]
 LABEL_DIRS = [TRAIN + ANNOTATION_DIR_SUFFIX, VAL + ANNOTATION_DIR_SUFFIX, TEST + ANNOTATION_DIR_SUFFIX]
+
 TRAIN_PORTION = 85
 VAL_PORTION = 10
 TEST_PORTION = 5
@@ -19,15 +19,13 @@ DIR_PORTIONS = [TRAIN_PORTION, VAL_PORTION, TEST_PORTION]
 
 
 def restructure():
-    ORIGINAL_DATA_DIR = '.' + ORIGINAL_DATASET
-    NEW_DATASET_DIR = '.' + NEW_DATASET
     for new_dir in DIRS + LABEL_DIRS:
         new_path = NEW_DATASET_DIR + new_dir
         if os.path.exists(new_path):
             shutil.rmtree(new_path)
         os.makedirs(new_path)
 
-    for subdir, dirs, files in os.walk(ORIGINAL_DATA_DIR + ORIGINAL_DATASET_ANNOTATED):
+    for subdir, dirs, files in os.walk(ORIGINAL_DATASET_DIR):
         files = [f for f in files if not f[0] == '.']
         dirs[:] = [d for d in dirs if not d[0] == '.']
         for file in files:
