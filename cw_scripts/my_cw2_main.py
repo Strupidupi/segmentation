@@ -1,4 +1,4 @@
-from main.main import main
+from main import main
 
 from cw2 import experiment, cw_error, cluster_work
 from cw2.cw_data import cw_logging
