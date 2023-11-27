@@ -47,7 +47,6 @@ class Dataset:
         _, mask = cv2.threshold(mask, 127, 255, cv2.THRESH_BINARY)
 
 
-
         # extract certain classes from mask (e.g. cars)
         masks = [(mask == v) for v in self.class_values]
         mask = np.stack(masks, axis=-1).astype('float')
