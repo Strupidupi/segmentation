@@ -1,0 +1,32 @@
+name: "DEFAULT"
+path: "results/"   # location to save results in
+
+#wandb:
+#  project: segmentation
+#  group: my_group
+
+---
+# Slurm config (optional)
+name: "SLURM"   # MUST BE "SLURM"
+
+# Required
+partition: "single"
+job-name: "segmentation"    # this will be the experiment's name in slurm
+
+num_parallel_jobs: 120
+ntasks: 1 # for single partition
+cpus-per-task: 1
+mem-per-cpu: 900
+time: 1080
+
+---
+# Experiment 1
+name: "segmentation"
+
+# Required: Can also be set in DEFAULT
+path: "results/"   # location to save results in
+repetitions: 1    # number of times one set of parameters is run
+
+# Experiment Parameters:
+params:
+  key: 'value'
