@@ -15,7 +15,7 @@ def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 
-    DATA_DIR = './data/CamVid/'
+    DATA_DIR = '../data/CamVid/'
 
     # load repo with data if it is not exists
     if not os.path.exists(DATA_DIR):
@@ -113,7 +113,7 @@ def main():
 
     # define callbacks for learning rate scheduling and best checkpoints saving
     callbacks = [
-        keras.callbacks.ModelCheckpoint('./best_model.h5', save_weights_only=True, save_best_only=True, mode='min'),
+        keras.callbacks.ModelCheckpoint('../best_model.h5', save_weights_only=True, save_best_only=True, mode='min'),
         keras.callbacks.ReduceLROnPlateau(),
     ]
 
