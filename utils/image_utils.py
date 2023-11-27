@@ -41,7 +41,6 @@ def get_training_augmentation():
 
         A.PadIfNeeded(min_height=1000, min_width=1000, always_apply=True, border_mode=0),
         A.RandomCrop(height=1000, width=1000, always_apply=True),
-
         # A.IAAAdditiveGaussianNoise(p=0.2) this is depracated
         A.GaussNoise(p=0.2),
         A.IAAPerspective(p=0.5),
