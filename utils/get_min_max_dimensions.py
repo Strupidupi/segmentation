@@ -1,7 +1,8 @@
 from PIL import Image
 import os
 
-DATASET_DIR = '../dataset'
+DATASET_DIR = '../Datensatz Gewebe/Originale mit Maske/'
+# DATASET_DIR = '../dataset/'
 
 def get_min_max_dimension(file_dir=DATASET_DIR):
     min_width, min_height = None, None

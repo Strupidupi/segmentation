@@ -57,7 +57,7 @@ def main():
     BATCH_SIZE = 8
     CLASSES = ['skin']
     LR = 0.0001
-    EPOCHS = 2
+    EPOCHS = 1
 
     preprocess_input = sm.get_preprocessing(BACKBONE)
 
@@ -105,8 +105,8 @@ def main():
     valid_dataloader = Dataloder(valid_dataset, batch_size=1, shuffle=False)
 
     # check shapes for errors
-    assert train_dataloader[0][0].shape == (BATCH_SIZE, 320, 320, 3)
-    assert train_dataloader[0][1].shape == (BATCH_SIZE, 320, 320, n_classes)
+    assert train_dataloader[0][0].shape == (BATCH_SIZE, 1000, 1000, 3)
+    assert train_dataloader[0][1].shape == (BATCH_SIZE, 1000, 1000, n_classes)
 
     # define callbacks for learning rate scheduling and best checkpoints saving
     callbacks = [

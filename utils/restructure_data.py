@@ -1,6 +1,9 @@
 import os
 import shutil
 import random
+import albumentations as A
+import cv2
+from get_min_max_dimensions import get_min_max_dimension
 
 ORIGINAL_DATASET_DIR = '../Datensatz Gewebe/Originale mit Maske'
 NEW_DATASET_DIR = '../dataset'
@@ -17,6 +20,15 @@ VAL_PORTION = 10
 TEST_PORTION = 5
 DIR_PORTIONS = [TRAIN_PORTION, VAL_PORTION, TEST_PORTION]
 
+min_width, max_height, max_width, max_height = get_min_max_dimension()
+new_width = ((max_width // 32) + 1) * 32
+new_height = ((max_height // 32) + 1) * 32
+
+def resize_image(image):
+    img = cv2.imread(image)
+    transform = A.PadIfNeeded(min_height=new_height, min_width=new_width, border_mode=cv2.BORDER_CONSTANT, value=[0, 0, 0])
+    augmented_image = transform(image=img)['image']
+    return augmented_image
 
 def restructure():
     for new_dir in DIRS + LABEL_DIRS:
@@ -41,8 +53,11 @@ def restructure():
                 dst += '/' + file
                 dst_label = NEW_DATASET_DIR + dst_dir + ANNOTATION_DIR_SUFFIX
                 dst_label += '/' + file
-                shutil.copy(src, dst)
-                shutil.copy(src_label, dst_label)
+
+                augmented_image = resize_image(src)
+                augmented_image_label = resize_image(src_label)
+                cv2.imwrite(dst, augmented_image)
+                cv2.imwrite(dst_label, augmented_image_label)
 
 
 if __name__ == '__main__':
