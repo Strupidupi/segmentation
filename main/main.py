@@ -15,7 +15,7 @@ def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 
-    DATA_DIR = '../data/CamVid/'
+    DATA_DIR = './dataset/'
 
     # load repo with data if it is not exists
     if not os.path.exists(DATA_DIR):
@@ -33,32 +33,29 @@ def main():
     y_test_dir = os.path.join(DATA_DIR, 'testannot')
 
 
-    # dataset = Dataset(x_train_dir, y_train_dir, classes=['car', 'pedestrian'])
+    # dataset = Dataset(x_train_dir, y_train_dir, classes=['skin'])
     #
     # image, mask = dataset[5] # get some sample
     # visualize(
     #     image=image,
-    #     cars_mask=mask[..., 0].squeeze(),
-    #     sky_mask=mask[..., 1].squeeze(),
-    #     background_mask=mask[..., 2].squeeze(),
+    #     skin_mask=mask[..., 0].squeeze(),
     # )
 
+
     # Lets look at augmented data we have
-    # dataset = Dataset(x_train_dir, y_train_dir, classes=['car', 'sky'], augmentation=get_training_augmentation())
-    #
+    # dataset = Dataset(x_train_dir, y_train_dir, classes=['skin'], augmentation=get_training_augmentation())
     # image, mask = dataset[12] # get some sample
     # visualize(
     #     image=image,
     #     cars_mask=mask[..., 0].squeeze(),
-    #     sky_mask=mask[..., 1].squeeze(),
-    #     background_mask=mask[..., 2].squeeze(),
     # )
+
 
     import segmentation_models as sm
 
     BACKBONE = 'efficientnetb3'
     BATCH_SIZE = 8
-    CLASSES = ['car']
+    CLASSES = ['skin']
     LR = 0.0001
     EPOCHS = 2
 

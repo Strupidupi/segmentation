@@ -18,9 +18,7 @@ class Dataset:
 
     """
 
-    CLASSES = ['sky', 'building', 'pole', 'road', 'pavement',
-               'tree', 'signsymbol', 'fence', 'car',
-               'pedestrian', 'bicyclist', 'unlabelled']
+    CLASSES = ['skin']
 
     def __init__(
             self,
@@ -45,7 +43,10 @@ class Dataset:
         # read data
         image = cv2.imread(self.images_fps[i])
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        mask = cv2.imread(self.masks_fps[i], 0)
+        mask = cv2.bitwise_not(cv2.imread(self.masks_fps[i], cv2.IMREAD_GRAYSCALE))
+        _, mask = cv2.threshold(mask, 127, 255, cv2.THRESH_BINARY)
+
+
 
         # extract certain classes from mask (e.g. cars)
         masks = [(mask == v) for v in self.class_values]
