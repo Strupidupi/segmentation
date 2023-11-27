@@ -19,19 +19,17 @@ for subdir, dirs, files in os.walk(ORIGINAL_DATASET_DIR):
             #cv2.imshow('Mask', mask)
             #cv2.waitKey(0)
             masks[i] = mask
-            print(filepath)
-
 
         # wende alle masken an
         combined_mask = np.zeros((1216, 1696))
-        print(combined_mask.shape)
         for idx, mask in masks.items():
             combined_mask[mask == 255] = idx
 
-        new_folder = "combined_masks"
-        path = "../dataset_forms/" + new_folder + "/" + file
+        
+        file_components = os.path.splitext(file)
+        file_name = file_components[0]
+        file_ext = file_components[1]
+        new_folder = "images"
+        path = "../dataset_forms/" + new_folder + "/" + file_name + '_mask' + file_ext
         print(path)
         cv2.imwrite(path, combined_mask)
-        #cv2.imshow('Combined Mask', combined_mask)
-        #cv2.waitKey(0)
-        #cv2.destroyAllWindows()

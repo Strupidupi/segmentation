@@ -5,8 +5,11 @@ import albumentations as A
 import cv2
 from get_min_max_dimensions import get_min_max_dimension
 
-ORIGINAL_DATASET_DIR = '../Datensatz Gewebe/Originale mit Maske'
-NEW_DATASET_DIR = '../dataset'
+# ORIGINAL_DATASET_DIR = '../Datensatz Gewebe/Originale mit Maske'
+# NEW_DATASET_DIR = '../dataset'
+ORIGINAL_DATASET_DIR = '../dataset_forms/images'
+NEW_DATASET_DIR = '../dataset_forms/dataset'
+
 ANNOTATION_DIR_SUFFIX = 'annot'
 MASK_SUFFIX = '_mask'
 TRAIN = '/train'
