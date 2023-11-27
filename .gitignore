@@ -7,5 +7,7 @@
 /dataSources/
 /dataSources.local.xml
 
-data/
+dataset/*
+Datensatz Gewebe/*
 best_model.h5
+0.3.0
