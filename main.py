@@ -1,13 +1,16 @@
-import os
-from datastructure.dataloader import Dataloder
-from datastructure.dataset import Dataset
-from utils.image_utils import visualize, denormalize, get_training_augmentation ,get_preprocessing, get_validation_augmentation
-import matplotlib.pyplot as plt
-import cv2
-import keras
-import numpy as np
+
 
 def main():
+    import os
+    from datastructure.dataloader import Dataloder
+    from datastructure.dataset import Dataset
+    from utils.image_utils import visualize, denormalize, get_training_augmentation, get_preprocessing, \
+        get_validation_augmentation
+    import matplotlib.pyplot as plt
+    import cv2
+    import keras
+    import numpy as np
+
     os.environ["SM_FRAMEWORK"] = "tf.keras"
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
@@ -127,24 +130,24 @@ def main():
     )
 
     # Plot training & validation iou_score values
-    plt.figure(figsize=(30, 5))
-    plt.subplot(121)
-    plt.plot(history.history['iou_score'])
-    plt.plot(history.history['val_iou_score'])
-    plt.title('Model iou_score')
-    plt.ylabel('iou_score')
-    plt.xlabel('Epoch')
-    plt.legend(['Train', 'Test'], loc='upper left')
+    # plt.figure(figsize=(30, 5))
+    # plt.subplot(121)
+    # plt.plot(history.history['iou_score'])
+    # plt.plot(history.history['val_iou_score'])
+    # plt.title('Model iou_score')
+    # plt.ylabel('iou_score')
+    # plt.xlabel('Epoch')
+    # plt.legend(['Train', 'Test'], loc='upper left')
 
     # Plot training & validation loss values
-    plt.subplot(122)
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
-    plt.title('Model loss')
-    plt.ylabel('Loss')
-    plt.xlabel('Epoch')
-    plt.legend(['Train', 'Test'], loc='upper left')
-    plt.show()
+    # plt.subplot(122)
+    # plt.plot(history.history['loss'])
+    # plt.plot(history.history['val_loss'])
+    # plt.title('Model loss')
+    # plt.ylabel('Loss')
+    # plt.xlabel('Epoch')
+    # plt.legend(['Train', 'Test'], loc='upper left')
+    # plt.show()
 
 
     ### Model evaluation
@@ -183,3 +186,5 @@ def main():
             gt_mask=gt_mask[..., 0].squeeze(),
             pr_mask=pr_mask[..., 0].squeeze(),
         )
+if __name__ == "__main__":
+    main()
