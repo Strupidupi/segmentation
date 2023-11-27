@@ -28,7 +28,9 @@ colors = [
 
 def get_closest_color_index(color, with_tint): 
     color_list = colors_tint if with_tint else colors
-    
+    np_color = np.array(color)
+    distances = [(np.linalg.norm(np_color - np.array(c)), i) for i,c in enumerate(color_list)]
+    return min(distances)[1]
 
 
 # Define the path to the images and masks
@@ -41,7 +43,6 @@ if not os.path.exists(path_to_masks):
 
 kernel = np.ones((10, 10), np.uint8) 
 x = os.listdir(path_to_images)
-x = ['2.jpg', '184c059f-prepared_img_224.jpg']
 
 # Process each file in the directory
 for filename in x:
@@ -62,24 +63,27 @@ for filename in x:
     # The black region in the mask has the value of 0, 
     # so when multiplied with original image removes all non-blue regions 
     result = cv2.bitwise_and(image, image, mask = mask) 
+    result = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
 
-    contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # find contours from mask
+    contours, _ = cv2.findContours(result, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    cv2.drawContours(result, contours, -1, color=(255, 255, 255), thickness=cv2.FILLED)
+    cv2.drawContours(result, contours, -1, color=(255, 255, 255), thickness=1)
     cv2.imshow("prep", result)
     cv2.waitKey(0) 
 
     for i,c in enumerate(contours):
-        if cv2.contourArea(c) < 1000: continue
+        if cv2.contourArea(c) < 10000: continue
 
         single_mask = np.zeros(image.shape[:2], np.uint8)
         cv2.fillPoly(single_mask, pts=[c], color=255)
         single_mask = cv2.morphologyEx(single_mask, cv2.MORPH_CLOSE, kernel)
-        new_filename = f"{i}_{filename}"
+
+        mean_color = cv2.mean(image, mask=single_mask)
+        shape_index = get_closest_color_index(mean_color, len(filename) > 10)
+
+        new_filename = f"{shape_index}_{filename}"
 
         cv2.imwrite(os.path.join(path_to_masks, new_filename), single_mask)
         
-        mean_color = cv2.mean(image, mask=single_mask)
-        print(mean_color)
 
     print("Processing complete.")
