@@ -1,7 +1,6 @@
 import os
 import cv2
 import numpy as np
-
 import cv2
 from sklearn.cluster import KMeans
 
@@ -42,6 +41,18 @@ class DominantColors:
         #returning after converting to integer from float
         return self.COLORS.astype(int)
 
+def dominant_colors(image):
+    clusters = 10
+    dc = DominantColors(result, clusters) 
+    colors = dc.dominantColors()
+    print(colors)
+
+    blank_image = np.zeros((clusters*30,clusters*30,3), np.uint8)
+    for i,c in enumerate(colors):
+        blank_image[i*30:(i+1)*30,:] = c
+    cv2.imshow("colors", blank_image)
+    cv2.waitKey(0) 
+
 # Define the path to the images and masks
 path_to_images = './our_data/Angle_Calculation/images'
 path_to_masks = os.path.join(path_to_images, 'masks')
@@ -57,6 +68,8 @@ color_hsv_ranges = {
     'blue': {'lower': (110, 50, 50), 'upper': (130, 255, 255)}
 }
 
+kernel = np.ones((5, 5), np.uint8) 
+
 # Define the color for each shape (replace these with your shapes and colors)
 shapes_colors = {
     'shape1': 'red',
@@ -65,13 +78,13 @@ shapes_colors = {
     # Add other shapes and their colors here...
 }
 x = os.listdir(path_to_images)
-x = ['2.jpg']
 # Process each file in the directory
 for filename in x:
     if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
         # Load the image
         filepath = os.path.join(path_to_images, filename)
         image = cv2.imread(filepath)
+        height,width,_ = image.shape
         hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
         # Threshold of blue in HSV space 
@@ -85,24 +98,20 @@ for filename in x:
         # so when multiplied with original image removes all non-blue regions 
         result = cv2.bitwise_and(image, image, mask = mask) 
 
+        contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # find contours from mask
+
+        cv2.drawContours(result, contours, -1, color=(255, 255, 255), thickness=cv2.FILLED)
         cv2.imshow("prep", result)
-
-        clusters = 10
-        dc = DominantColors(result, clusters) 
-        colors = dc.dominantColors()
-        print(colors)
-
-        ml, bb, stats, center = cv2.connectedComponentsWithStats(mask, connectivity=4)
-
-        print('bb', bb)
-        print('a', stats)
-        print('cent', center)
-
-        blank_image = np.zeros((clusters*30,clusters*30,3), np.uint8)
-        for i,c in enumerate(colors):
-            blank_image[i*30:(i+1)*30,:] = c
-        cv2.imshow("colors", blank_image)
         cv2.waitKey(0) 
+
+        for i,c in enumerate(contours):
+            if cv2.contourArea(c) < 1000: continue
+
+            single_mask = np.zeros((height,width,3), np.uint8)
+            cv2.fillPoly(single_mask, pts=[c], color=(255,255,255))
+            single_mask = cv2.dilate(single_mask, kernel, iterations=3)
+            new_filename = f"{i}_{filename}"
+
 
         # Create and save masks for each shape
         for shape_name, color_name in shapes_colors.items():
