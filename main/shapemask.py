@@ -4,42 +4,72 @@ import numpy as np
 import cv2
 from sklearn.cluster import KMeans
 
+
 def find_shapes(image):
-    # Function to check if a pixel is not black and not already visited
-    def is_valid_pixel(x, y, visited):
-        return 0 <= x < image.shape[1] and 0 <= y < image.shape[0] and image[y, x] != 0 and not visited[y, x]
+    """
+    Find all connected shapes in an image where the background is black.
 
-    # Function to perform DFS to find all pixels belonging to the same shape
-    def dfs(x, y, visited, shape):
-        # Directions for neighboring pixels (up, down, left, right)
-        directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
-        
-        # Mark the current pixel as visited and add to the shape
-        visited[y, x] = True
-        shape.append((x, y))
+    :param image: Input image with shapes
+    :return: A list of shapes, where each shape is a list of pixel coordinates
+    """
+    # Ensure the image is in grayscale
+    if len(image.shape) == 3:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-        # Visit all neighboring pixels
-        for dx, dy in directions:
-            nx, ny = x + dx, y + dy
-            if is_valid_pixel(nx, ny, visited):
-                dfs(nx, ny, visited, shape)
-
-    # List to store all shapes
+    # Initialize variables
+    visited = np.zeros_like(image, dtype=bool)  # To track visited pixels
     shapes = []
 
-    # Create an array to mark visited pixels
-    visited = np.zeros_like(image, dtype=bool)
+    # Define the eight possible directions (neighbors)
+    directions = [(1, 0), (0, 1), (-1, 0), (0, -1), (1, 1), (-1, -1), (1, -1), (-1, 1)]
 
-    # Iterate through each pixel in the image
+    def is_valid(x, y):
+        """ Check if a pixel is within the image bounds and not black """
+        return 0 <= x < image.shape[1] and 0 <= y < image.shape[0] and image[y, x] != 0
+
     for y in range(image.shape[0]):
         for x in range(image.shape[1]):
-            if is_valid_pixel(x, y, visited):
-                # Found a new shape, perform DFS
+            if is_valid(x, y) and not visited[y, x]:
+                stack = [(x, y)]
                 shape = []
-                dfs(x, y, visited, shape)
-                shapes.append(shape)
+
+                while stack:
+                    px, py = stack.pop()
+                    if is_valid(px, py) and not visited[py, px]:
+                        visited[py, px] = True
+                        shape.append((px, py))
+
+                        # Add neighbors to stack
+                        for dx, dy in directions:
+                            nx, ny = px + dx, py + dy
+                            if is_valid(nx, ny) and not visited[ny, nx]:
+                                stack.append((nx, ny))
+
+                if shape:
+                    shapes.append(shape)
 
     return shapes
+
+def create_shape_images(image, shapes):
+    """
+    Create and display images for each shape found in the original image.
+
+    :param image: Original image from which shapes were extracted
+    :param shapes: List of shapes, where each shape is a list of pixel coordinates
+    """
+    for i, shape in enumerate(shapes):
+        # Create a blank image with the same dimensions as the original
+        shape_image = np.zeros_like(image)
+
+        # Draw the shape on the blank image
+        for x, y in shape:
+            shape_image[y, x] = 255  # Assuming shapes are white on black background
+
+        # Display the shape image
+        cv2.imshow(f'Shape {i+1}', shape_image)
+        cv2.waitKey(0)  # Waits for a key press to move to the next image
+
+    cv2.destroyAllWindows()
 
 class DominantColors:
 
@@ -79,7 +109,7 @@ class DominantColors:
         return self.COLORS.astype(int)
 
 # Define the path to the images and masks
-path_to_images = './our_data/Angle_Calculation/images'
+path_to_images = '../our_data/Angle_Calculation/images'
 path_to_masks = os.path.join(path_to_images, 'masks')
 
 # Create the masks directory if it doesn't exist
@@ -97,7 +127,8 @@ for filename in x:
         filepath = os.path.join(path_to_images, filename)
         image = cv2.imread(filepath)
         
-        y = find_shapes(image)
+        y = find_shapes(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY))
+        create_shape_images(image, y)
         print('y', y)
         break
         hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)

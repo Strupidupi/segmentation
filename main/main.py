@@ -57,7 +57,7 @@ def main():
     BATCH_SIZE = 8
     CLASSES = ['skin']
     LR = 0.0001
-    EPOCHS = 1
+    EPOCHS = 10
 
     preprocess_input = sm.get_preprocessing(BACKBONE)
 
