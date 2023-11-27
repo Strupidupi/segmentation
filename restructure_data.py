@@ -5,13 +5,13 @@ import random
 ORIGINAL_DATASET = '/Datensatz Gewebe'
 ORIGINAL_DATASET_ANNOTATED = '/Originale mit Maske'
 NEW_DATASET = '/dataset'
-LABELS = 'annot'
+ANNOTATION_DIR_SUFFIX = 'annot'
 MASK_SUFFIX = '_mask'
 TRAIN = '/train'
 VAL = '/val'
 TEST = '/test'
 DIRS = [TRAIN, VAL, TEST]
-LABEL_DIRS = [TRAIN + LABELS, VAL + LABELS, TEST + LABELS]
+LABEL_DIRS = [TRAIN + ANNOTATION_DIR_SUFFIX, VAL + ANNOTATION_DIR_SUFFIX, TEST + ANNOTATION_DIR_SUFFIX]
 TRAIN_PORTION = 85
 VAL_PORTION = 10
 TEST_PORTION = 5
@@ -41,8 +41,8 @@ def restructure():
                 dst_dir = random.choices(population=DIRS, weights=DIR_PORTIONS, k=1)[0]
                 dst = NEW_DATASET_DIR + dst_dir
                 dst += '/' + file
-                dst_label = NEW_DATASET_DIR + dst_dir + LABELS
-                dst_label += '/' + file_name + MASK_SUFFIX + file_ext
+                dst_label = NEW_DATASET_DIR + dst_dir + ANNOTATION_DIR_SUFFIX
+                dst_label += '/' + file
                 shutil.copy(src, dst)
                 shutil.copy(src_label, dst_label)
 
