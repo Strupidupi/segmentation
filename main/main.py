@@ -1,27 +1,30 @@
+import segmentation_models as sm
+import os
+from datastructure.dataloader import Dataloder
+from datastructure.dataset import Dataset
+from utils.image_utils import visualize, denormalize, get_training_augmentation, get_preprocessing, \
+    get_validation_augmentation
+import keras
+import numpy as np
+
+SKIN_MODEL_V1 = './skin_segmentation_model_v1.h5'
+ZWI_MODEL_PATH = './best_model.h5'
+DATA_DIR = './dataset/'
+
+BACKBONE = 'efficientnetb3'
+BATCH_SIZE = 8
+CLASSES = ['skin']
+LR = 0.0001
+EPOCHS = 20
+
+n_classes = 1 if len(CLASSES) == 1 else (len(CLASSES) + 1)  # case for binary and multiclass segmentation
+activation = 'sigmoid' if n_classes == 1 else 'softmax'
 
 
-def main():
-    import os
-    from datastructure.dataloader import Dataloder
-    from datastructure.dataset import Dataset
-    from utils.image_utils import visualize, denormalize, get_training_augmentation, get_preprocessing, \
-        get_validation_augmentation
-    import matplotlib.pyplot as plt
-    import cv2
-    import keras
-    import numpy as np
+def train_model():
 
     os.environ["SM_FRAMEWORK"] = "tf.keras"
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-
-
-    DATA_DIR = './dataset/'
-
-    # load repo with data if it is not exists
-    if not os.path.exists(DATA_DIR):
-        print('Loading data...')
-        os.system('git clone https://github.com/alexgkendall/SegNet-Tutorial ./data')
-        print('Done!')
 
     x_train_dir = os.path.join(DATA_DIR, 'train')
     y_train_dir = os.path.join(DATA_DIR, 'trainannot')
@@ -29,55 +32,17 @@ def main():
     x_valid_dir = os.path.join(DATA_DIR, 'val')
     y_valid_dir = os.path.join(DATA_DIR, 'valannot')
 
-    x_test_dir = os.path.join(DATA_DIR, 'test')
-    y_test_dir = os.path.join(DATA_DIR, 'testannot')
-
-
-    # dataset = Dataset(x_train_dir, y_train_dir, classes=['skin'])
-    #
-    # image, mask = dataset[5] # get some sample
-    # visualize(
-    #     image=image,
-    #     skin_mask=mask[..., 0].squeeze(),
-    # )
-
-
-    # Lets look at augmented data we have
-    # dataset = Dataset(x_train_dir, y_train_dir, classes=['skin'], augmentation=get_training_augmentation())
-    # image, mask = dataset[12] # get some sample
-    # visualize(
-    #     image=image,
-    #     cars_mask=mask[..., 0].squeeze(),
-    # )
-
-
-    import segmentation_models as sm
-
-    BACKBONE = 'efficientnetb3'
-    BATCH_SIZE = 8
-    CLASSES = ['skin']
-    LR = 0.0001
-    EPOCHS = 10
-
     preprocess_input = sm.get_preprocessing(BACKBONE)
 
-    n_classes = 1 if len(CLASSES) == 1 else (len(CLASSES) + 1)  # case for binary and multiclass segmentation
-    activation = 'sigmoid' if n_classes == 1 else 'softmax'
-
-    #create model
     model = sm.Unet(BACKBONE, classes=n_classes, activation=activation)
 
-    # define optomizer
     optim = keras.optimizers.Adam(LR)
 
-    # Segmentation models losses can be combined together by '+' and scaled by integer or float factor
+    # Segmentation models losses can be combined by '+' and scaled by integer or float factor
     dice_loss = sm.losses.DiceLoss()
     focal_loss = sm.losses.BinaryFocalLoss() if n_classes == 1 else sm.losses.CategoricalFocalLoss()
     total_loss = dice_loss + (1 * focal_loss)
-
-    # actulally total_loss can be imported directly from library, above example just show you how to manipulate with losses
-    # total_loss = sm.losses.binary_focal_dice_loss # or sm.losses.categorical_focal_dice_loss
-
+    
     metrics = [sm.metrics.IOUScore(threshold=0.5), sm.metrics.FScore(threshold=0.5)]
 
     # compile keras model with defined optimozer, loss and metrics
@@ -104,18 +69,11 @@ def main():
     train_dataloader = Dataloder(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     valid_dataloader = Dataloder(valid_dataset, batch_size=1, shuffle=False)
 
-    # check shapes for errors
-
-    # assert train_dataloader[0][0].shape == (BATCH_SIZE, 320, 320, 3)
-    # assert train_dataloader[0][1].shape == (BATCH_SIZE, 320, 320, n_classes)
-
     # define callbacks for learning rate scheduling and best checkpoints saving
     callbacks = [
-        keras.callbacks.ModelCheckpoint('../best_model.h5', save_weights_only=True, save_best_only=True, mode='min'),
+        keras.callbacks.ModelCheckpoint(ZWI_MODEL_PATH, save_weights_only=True, save_best_only=True, mode='min'),
         keras.callbacks.ReduceLROnPlateau(),
     ]
-
-
 
     # train model
     history = model.fit_generator(
@@ -127,43 +85,37 @@ def main():
         validation_steps=len(valid_dataloader),
     )
 
-    # Plot training & validation iou_score values
-    # plt.figure(figsize=(30, 5))
-    # plt.subplot(121)
-    # plt.plot(history.history['iou_score'])
-    # plt.plot(history.history['val_iou_score'])
-    # plt.title('Model iou_score')
-    # plt.ylabel('iou_score')
-    # plt.xlabel('Epoch')
-    # plt.legend(['Train', 'Test'], loc='upper left')
 
-    # Plot training & validation loss values
-    # plt.subplot(122)
-    # plt.plot(history.history['loss'])
-    # plt.plot(history.history['val_loss'])
-    # plt.title('Model loss')
-    # plt.ylabel('Loss')
-    # plt.xlabel('Epoch')
-    # plt.legend(['Train', 'Test'], loc='upper left')
-    # plt.show()
+def test_model(model_path=ZWI_MODEL_PATH):
 
+    print('viewing model', model_path)
 
-    ### Model evaluation
+    x_test_dir = os.path.join(DATA_DIR, 'test')
+    y_test_dir = os.path.join(DATA_DIR, 'testannot')
+
+    preprocess_input = sm.get_preprocessing(BACKBONE)
 
     test_dataset = Dataset(
         x_test_dir,
         y_test_dir,
         classes=CLASSES,
-        augmentation=get_validation_augmentation(),
         preprocessing=get_preprocessing(preprocess_input),
     )
 
     test_dataloader = Dataloder(test_dataset, batch_size=1, shuffle=False)
 
+    model = sm.Unet(BACKBONE, classes=n_classes, activation=activation)
+    metrics = [sm.metrics.IOUScore(threshold=0.5), sm.metrics.FScore(threshold=0.5)]
 
-    # load best weights
-    model.load_weights('best_model.h5')
+    dice_loss = sm.losses.DiceLoss()
+    focal_loss = sm.losses.BinaryFocalLoss() if n_classes == 1 else sm.losses.CategoricalFocalLoss()
+    total_loss = dice_loss + (1 * focal_loss)
 
+    optim = keras.optimizers.Adam(LR)
+
+    model.compile(optim, total_loss, metrics)
+
+    model.load_weights(model_path)
 
     scores = model.evaluate_generator(test_dataloader)
 
@@ -184,5 +136,8 @@ def main():
             gt_mask=gt_mask[..., 0].squeeze(),
             pr_mask=pr_mask[..., 0].squeeze(),
         )
+
+
 if __name__ == "__main__":
-    main()
+    train_model()
+    test_model(SKIN_MODEL_V1)  # Change here to view other models
