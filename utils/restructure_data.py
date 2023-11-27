@@ -24,7 +24,7 @@ min_width, max_height, max_width, max_height = get_min_max_dimension()
 new_width = ((max_width // 32) + 1) * 32
 new_height = ((max_height // 32) + 1) * 32
 
-def resize_image(image):
+def resize_image(image, new_height=new_height, new_width=new_width):
     img = cv2.imread(image)
     transform = A.PadIfNeeded(min_height=new_height, min_width=new_width, border_mode=cv2.BORDER_CONSTANT, value=[0, 0, 0])
     augmented_image = transform(image=img)['image']
