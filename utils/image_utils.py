@@ -33,7 +33,7 @@ def round_clip_0_1(x, **kwargs):
 
 # define heavy augmentations
 def get_training_augmentation():
-    size = 507
+    size = 320
     train_transform = [
 
         A.HorizontalFlip(p=0.5),
@@ -41,7 +41,7 @@ def get_training_augmentation():
         A.ShiftScaleRotate(scale_limit=0.5, rotate_limit=0, shift_limit=0.1, p=1, border_mode=0),
 
         A.PadIfNeeded(min_height=size, min_width=size, always_apply=True, border_mode=0),
-        A.RandomCrop(height=size, width=size, always_apply=True),
+        A.RandomCrop(height=480, width=1280, always_apply=True),
         # A.IAAAdditiveGaussianNoise(p=0.2) this is depracated
         A.GaussNoise(p=0.2),
         A.IAAPerspective(p=0.5),
