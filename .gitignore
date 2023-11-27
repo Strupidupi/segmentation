@@ -6,9 +6,11 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+# masks for object detection
+/our_data/Angle_Calculation/images/masks
 
-dataset/*
-Datensatz Gewebe/*
+# dataset/*
+# Datensatz Gewebe/*
 best_model.h5
 0.3.0
 */__pycache__/*
