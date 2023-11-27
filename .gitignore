@@ -11,3 +11,7 @@ dataset/*
 Datensatz Gewebe/*
 best_model.h5
 0.3.0
+*/__pycache__/*
+/shelf/
+/workspace.xml
+.idea/*
