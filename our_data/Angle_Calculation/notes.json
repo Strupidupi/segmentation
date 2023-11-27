@@ -1,0 +1,45 @@
+{
+  "categories": [
+    {
+      "id": 0,
+      "name": "Circle"
+    },
+    {
+      "id": 1,
+      "name": "Ellipse"
+    },
+    {
+      "id": 2,
+      "name": "Heart"
+    },
+    {
+      "id": 3,
+      "name": "Parallelogram"
+    },
+    {
+      "id": 4,
+      "name": "Pentagon"
+    },
+    {
+      "id": 5,
+      "name": "Rectangle"
+    },
+    {
+      "id": 6,
+      "name": "Square"
+    },
+    {
+      "id": 7,
+      "name": "Star"
+    },
+    {
+      "id": 8,
+      "name": "Triangle"
+    }
+  ],
+  "info": {
+    "year": 2023,
+    "version": "1.0",
+    "contributor": "Label Studio"
+  }
+}
