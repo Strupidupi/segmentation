@@ -28,6 +28,8 @@ class ShapesContainer(UserControl):
         self.page
 
     def build(self):
+        self.clicked = False
+        
         sampleOriginalCards = [ImageCard(paths[i]["ori"], "Originalbild", 292, 150) for i in range(3)]
         sampleResultCards = [ImageCard(paths[i]["result"], "Unser Ansatz", 292, 150) for i in range(3)]
         sampleMaskCards = [ImageCard(paths[i]["mask"], "Vorlage", 292, 150) for i in range(3)]

@@ -49,7 +49,7 @@ def main(page: Page):
     page.appbar = AppBar(
         leading=leading,
         bgcolor=colors.LIGHT_GREEN_600,
-        leading_width=300,
+        leading_width=600,
         toolbar_height=70,
         center_title=False
     )
