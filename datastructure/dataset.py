@@ -63,7 +63,7 @@ class Dataset:
                 sample = self.augmentation(image=image, mask=mask)
                 augmented_image, augmented_mask = sample['image'], sample['mask']
                 count_unique_values = np.unique(augmented_mask, return_counts=True)
-                mask_proportion = 0 if len(count_unique_values[0]) <= 1 else count_unique_values[1][1] / (count_unique_values[1][0] + count_unique_values[1][1])
+                mask_proportion = 0 if len(count_unique_values[0]) <= 1 else (count_unique_values[1][1] + count_unique_values[1][2]) / (count_unique_values[1][0] + count_unique_values[1][1])
             image = augmented_image
             mask = augmented_mask
 
