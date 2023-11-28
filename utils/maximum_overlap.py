@@ -1,22 +1,18 @@
 import cv2
 import numpy as np
+from forms_rotation_trainingdata import SHAPE_ROTATIONS
+import matplotlib.pyplot as plt
 
-def get_maximum_overlap(path_to_original_not_rotated_image : str, path_to_rotated_image: str):
-    # Read an image from file
-    not_rotated = cv2.imread('path/to/your/image.jpg')
-    rotated = cv2.imread('path/to/your/image.jpg')
-
+def get_maximum_overlap(not_rotated, rotated, shape):
     # Get the height and width of the image
     height, width = not_rotated.shape[:2]
     max_count = 0
     max_degree = 0
-    for i in range(90):
-
-        # Define the rotation angle (in degrees)
-        angle = i * 4
-
+    count_arr = []
+    degree_arr = []
+    for angle in range(0, SHAPE_ROTATIONS.get(shape), 4):
         # Calculate the rotation matrix
-        rotation_matrix = cv2.getRotationMatrix2D((width / 2, height / 2), angle, 1)
+        rotation_matrix = cv2.getRotationMatrix2D((width / 2, height / 2), -angle, 1)
 
         # Apply the rotation to the image
         rotated_original = cv2.warpAffine(not_rotated, rotation_matrix, (width, height))
@@ -29,6 +25,8 @@ def get_maximum_overlap(path_to_original_not_rotated_image : str, path_to_rotate
         result = cv2.bitwise_and(rotated_original, rotated)
         # Count the number of pixels with value 1 in the result
         count_ones = np.count_nonzero(result)
+        count_arr.append(count_ones)
+        degree_arr.append(angle)
         if count_ones > max_count:
             max_count = count_ones
             max_degree = angle
@@ -38,4 +36,10 @@ def get_maximum_overlap(path_to_original_not_rotated_image : str, path_to_rotate
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
-    return angle
+    plt.plot(degree_arr, count_arr)
+    plt.xlabel('Degree')
+    plt.ylabel('Intersecion')
+    plt.title('Plot')
+    plt.savefig('matching_plot.png')
+
+    return max_degree

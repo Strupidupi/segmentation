@@ -23,7 +23,7 @@ for subdir, dirs, files in os.walk(ORIGINAL_DATASET_DIR):
         # wende alle masken an
         combined_mask = np.zeros((1216, 1696))
         for idx, mask in masks.items():
-            combined_mask[mask == 255] = idx + 1
+            combined_mask[mask == 255] = idx
 
         
         file_components = os.path.splitext(file)
