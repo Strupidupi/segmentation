@@ -4,7 +4,8 @@ import cv2
 from get_min_max_dimensions import get_min_max_dimension
 from restructure_data import resize_image
 
-FORMS_DIR = '../dataset_forms'
+FORMS_DIR = '../dataset_forms/original_images'
+DST_FORMS_DIR = '../dataset_forms/images'
 
 if __name__ == '__main__':
     min_width, max_height, max_width, max_height = get_min_max_dimension(FORMS_DIR)
@@ -15,5 +16,6 @@ if __name__ == '__main__':
         dirs[:] = [d for d in dirs if not d[0] == '.']
         for file in files:
             src = subdir + '/' + file
+            dst = DST_FORMS_DIR + '/' + file
             augmented_image = resize_image(src, new_height=new_height, new_width=new_width)
-            cv2.imwrite(src, augmented_image)
+            cv2.imwrite(dst, augmented_image)
