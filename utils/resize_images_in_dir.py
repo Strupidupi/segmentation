@@ -6,8 +6,11 @@ from restructure_data import resize_image
 
 # FORMS_DIR = '../dataset_forms/original_images'
 # DST_FORMS_DIR = '../dataset_forms/images'
-FORMS_DIR = './test_images'
-DST_FORMS_DIR = './resized_test_images'
+# FORMS_DIR = './test_images'
+# DST_FORMS_DIR = './resized_test_images'
+
+FORMS_DIR = './test_images_overlap'
+DST_FORMS_DIR = './resized_test_images_overlap'
 
 if __name__ == '__main__':
     min_width, max_height, max_width, max_height = get_min_max_dimension(FORMS_DIR)
