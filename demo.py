@@ -64,7 +64,7 @@ class Dataset:
 
     """
 
-    CLASSES = ['circle', 'ellipse', 'heart', 'parallelogram', 'pentagon', 'rectangle', 'square', 'star', 'triangle','unlabelled']
+    CLASSES = ['unlabelled', 'circle', 'ellipse', 'heart', 'parallelogram', 'pentagon', 'rectangle', 'square', 'star', 'triangle']
 
     def __init__(
             self,
@@ -267,7 +267,7 @@ import segmentation_models as sm
 
 BACKBONE = 'efficientnetb3'
 BATCH_SIZE = 8
-CLASSES = ['circle', 'ellipse']
+CLASSES = ['circle', 'triangle']
 LR = 0.0001
 EPOCHS = 1
 
